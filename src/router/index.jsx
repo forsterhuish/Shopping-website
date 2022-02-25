@@ -30,7 +30,7 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: "/admin",
+      path: "/admin-panel",
       name: "admin-panel",
       component: Admin
     }

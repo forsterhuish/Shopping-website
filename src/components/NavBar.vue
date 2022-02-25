@@ -2,6 +2,7 @@
     import ShoppingList from '@/components/ShoppingList.vue';
     import { useStore } from 'vuex';
     import { RouterLink } from 'vue-router';
+    import * as axios from 'axios';
     // Bootstrap
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap";
@@ -12,6 +13,10 @@
         store.commit('updateProductID', -1); // update current product ID
         store.commit('updatePageID', pageIndex); // update current page ID
     }
+    const res = await axios.get("/cat.php");
+    const categories = res.data;
+    console.log(categories);
+
 </script>
 
 <template>
@@ -20,7 +25,7 @@
             <div class="container-fluid">
                 <!-- <a class="navbar-brand">{{ brand }}</a> -->
                 <router-link :to="{ path: '/' }" class="navbar-brand">{{ brand }}</router-link>
-                <router-link :to="{ path: '/admin' }" class="nav-link">Admin</router-link>
+                <router-link :to="{ path: '/admin-panel' }" class="nav-link">Admin</router-link>
                 <!-- Show collapsed menu when in small screen size only -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
