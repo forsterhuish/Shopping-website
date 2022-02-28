@@ -11,12 +11,12 @@
     
     const activeBreadcrumb = (index) => {
         // Determine whether the breadcrumb should be active
-        return index === store.state.currentPageID && store.state.currentProductID < 0;
+        return index === store.state.currentCatID && store.state.currentProductID < 0;
     }
 
     const navigatePage = (index) => {
         store.commit('updateProductID', -1);
-        store.commit('updatePageID', index);
+        store.commit('updateCatID', index);
         store.commit('hideProductDetails');
     }
 </script>
@@ -25,12 +25,12 @@
     <nav class="page-breadcrumb" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><router-link :to="{path: `/`}" @click="navigatePage(0)">Home</router-link></li>
-            <li v-for="(category, index) in store.state.categories" :key="index" 
-                v-show="index === store.state.currentPageID" class="breadcrumb-item" 
-                :class="activeBreadcrumb(index) ? 'active' : ''" aria-current="page"
+            <li v-for="category in store.state.categories" :key="category.catid" 
+                v-show="category.catid === store.state.currentCatID" class="breadcrumb-item" 
+                :class="activeBreadcrumb(category.catid) ? 'active' : ''" aria-current="page"
             >
-                <router-link :to="{path: `/${category}`}" @click="navigatePage(index)" v-if="store.state.currentProductID >= 0">{{ category }}</router-link>
-                <span v-else>{{ category }}</span>
+                <router-link :to="{path: `/`}" @click="navigatePage(category.catid)" v-if="store.state.currentProductID >= 0">{{ category.name }}</router-link>
+                <span v-else>{{ category.name }}</span>
             </li>
             <li class="breadcrumb-item active" v-show="store.state.currentProductID >= 0">{{ currentProductBreadcrumb() }}</li>
         </ol>

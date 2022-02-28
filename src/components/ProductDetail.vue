@@ -13,15 +13,15 @@
     });
     const emit = defineEmits(['add-to-cart', 'display-image']);
     const displayImage = (product) => {
-        return product.category === "Food"
-            ? "/images/food.jpeg"
-            : "/images/beverages.jpeg";
+        return product.catid === store.state.categories[0].catid
+            ? "/admin/lib/images/food.jpeg"
+            : "/admin/lib/images/beverages.jpeg";
     };
     const addToCart = (product) => {
         emit("add-to-cart", product);
     };
     const currentInventory = computed(() => {
-        return store.state.products.find((item) => item.name === props.product.name).inventory;
+        return store.state.products.find((item) => item.pid === props.product.pid).stock;
     });
 </script>
 
@@ -38,11 +38,7 @@
                 <section>
                     <!-- Description -->
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco la
-                        boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in vol
-                        uptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        {{ props.product.description }}
                     </p>
                 </section>
                 <button class="btn btn-primary add-to-cart-button" @click="addToCart(props.product)">Add To Cart</button>
