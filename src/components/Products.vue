@@ -9,13 +9,13 @@
     const store = useStore();
     const emit = defineEmits(['add-to-cart', 'show-product-details']);
 
-    let currentProduct = {};
     const currentPage = computed(() => {
         // Return name of selected category
         return store.state.categories[store.state.currentCatID];
     });
     const displayImage = (product) => {
-        return product.url instanceof String && product.url ? product.url : 
+        let prod_url = ""
+        return prod_url !== "" ? prod_url : 
             (product.catid === store.state.categories[0].catid
                 ? '/admin/lib/images/food.jpeg'
                 : '/admin/lib/images/beverages.jpeg'
@@ -34,7 +34,7 @@
         <div class="row">
             <div class="col-lg-3 col-md-4 col-sm-6 thumbnail" v-for="product in store.state.products" :key="product.pid" v-show="store.state.currentCatID > 0 && product.catid === store.state.currentCatID">
                 <a href="#" @click='viewDetails(product)'>
-                    <img class="product-thumbnail" alt="product.name" :src="displayImage(product)"> <!-- Product Thumbnail -->
+                    <img class="product-thumbnail" :alt="product.name" :src="displayImage(product)"> <!-- Product Thumbnail -->
                 </a>
                 <a href="#" @click='viewDetails(product)'>
                     <p class="product-name">{{ product.name }}</p> <!-- Product Name -->
@@ -45,7 +45,6 @@
             <h1 v-show="store.state.currentCatID === 0">This is the home page</h1>
         </div>
     </div>
-    <!-- <ProductDetail v-else :product="currentProduct" @add-to-cart="addToCart"></ProductDetail> -->
 </template>
 
 <style scoped>

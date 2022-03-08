@@ -1,10 +1,10 @@
 <script setup>
-    import { computed, defineProps, defineEmits } from 'vue';
+    import { computed } from 'vue';
     import { useStore } from 'vuex';
-    const store = useStore();
-    // Bootstrap
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap";
+    const store = useStore();
+    // Bootstrap
     const props = defineProps({
         product: {
             type: Object,
@@ -13,9 +13,20 @@
     });
     const emit = defineEmits(['add-to-cart', 'display-image']);
     const displayImage = (product) => {
-        return product.catid === store.state.categories[0].catid
-            ? "/admin/lib/images/food.jpeg"
-            : "/admin/lib/images/beverages.jpeg";
+        prod_url = ""
+        // for (let ext of ['jpg', 'jpeg', 'png', 'gif']) {
+        //     const res = await fetch(`/admin/lib/images/${product.pid}.${ext}`, { method: "HEAD" });
+        //     if (res.ok) {
+        //         // URL is valid
+        //         prod_url = `/admin/lib/images/${product.pid}.${ext}`;
+        //         break;
+        //     }
+        // }
+        return prod_url !== "" ? prod_url : 
+            (product.catid === store.state.categories[0].catid
+                ? '/admin/lib/images/food.jpeg'
+                : '/admin/lib/images/beverages.jpeg'
+            );
     };
     const addToCart = (product) => {
         emit("add-to-cart", product);
@@ -29,14 +40,13 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <img class="product-image-large" :src="displayImage(props.product)">
+                <img class="product-image-large" :src="displayImage(props.product)" :alt="product.name">
             </div>
             <div class="col">
                 <p class="product-detail-name">{{ props.product.name }}</p>
                 <p class="product-detail-price">${{ props.product.price }}</p>
                 <p class="product-detail-inventory">Inventory: {{ currentInventory }}</p>
                 <section>
-                    <!-- Description -->
                     <p>
                         {{ props.product.description }}
                     </p>

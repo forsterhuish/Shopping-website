@@ -6,7 +6,7 @@
     import { RouterLink } from 'vue-router';
     const store = useStore();
     const currentProductBreadcrumb = () => {
-        return store.state.currentProductID > 0 ? store.state.products.find(item => item.id === store.state.currentProductID).name : '';
+        return store.state.currentProductID > 0 ? store.state.products.find(item => item.pid === store.state.currentProductID).name : '';
     }
     
     const activeBreadcrumb = (index) => {

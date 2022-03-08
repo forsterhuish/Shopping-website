@@ -2,7 +2,6 @@
 // Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-import * as axios from "axios";
 import { onBeforeRouteUpdate, useRouter } from 'vue-router';
 import { useStore } from "vuex";
 import { parse } from "@vue/compiler-dom";
@@ -128,9 +127,6 @@ const catFormSubmit = async () => {
         const res_text = await res.text();
         console.log(JSON.parse(res_text.split(";")[1]));
     }
-
-    // const res = await axios.get('/php/example.php');
-    // console.log(res.data)
 };
 const prodFormSubmit = async () => {
     // Verified product management form

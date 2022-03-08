@@ -12,17 +12,18 @@
         store.state.showCart = true;
     }
     const hideCart = () => {
-        store.state.showCart = false;
+        // store.state.showCart = false;
+        store.state.showCart = true;
     }
     const handleQuantityChange = (chosenItem) => {
-        const cartItemIndex = store.state.cart.findIndex(item => item.id === chosenItem.id);
-        const productIndex = store.state.products.findIndex(item => item.id === chosenItem.id);
+        const cartItemIndex = store.state.cart.findIndex(item => item.pid === chosenItem.pid);
+        const productIndex = store.state.products.findIndex(item => item.pid === chosenItem.pid);
         if (cartItemIndex < 0 ) {
             console.error("Item not found");
             return;
         }
         if (chosenItem.quantity === 0) {
-            if (confirm(`Are you sure you want to remove this from your cart?\n    ${chosenItem.name}`)) {
+            if (confirm(`Are you sure you want to remove this from your cart?\n    ${findItem(chosenItem).name}`)) {
                 // Remove item from cart
                 // store.commit('updateInventory', { productIndex: productIndex, updateValue: 1 })
                 store.commit('removeItemFromCart', cartItemIndex);
@@ -45,24 +46,39 @@
         oldValue = value;
     }
     const title = computed(() => {
-        return 'Shopping List (Total: $' + store.state.cart.reduce((prev, { price, quantity }) => prev + price * quantity, 0) + ')';
+        return 'Shopping List (Total: $' + store.state.cart.reduce((prev, curr) => prev + findItem(curr).price * curr.quantity, 0).toFixed(2) + ')';
     });
+
+    const findItem = (item) => {
+        return store.state.products.find(i => i.pid === item.pid);
+        // return {
+        //     name: "Test",
+        //     quantity: 1,
+        //     price: 2.3
+        // }
+    }
+
 </script>
 
 <template>
     <div @mouseover="showCart" @mouseleave="hideCart">
         <i id="cart-icon" class="bi bi-cart icon"></i>
         <!-- shopping list -->
-        <div class="container shopping-list" v-if="store.state.showCart">
+        <div class="container-fluid shopping-list" v-if="store.state.showCart">
             <title id="shopping-list-title" class="row align-items-start">{{ title }}</title>
-            <ul class="row align-items-center shopping-list-item" v-for="item in store.state.cart" :key="item.id">
-                <li id="shopping-list-item-name" class="col-7">{{ item.name }}</li>
-                Qty: 
-                <input class="col-2" type="number" min="0" v-model.number="item.quantity" @focus="updateOldValue(item.quantity)" @change="handleQuantityChange(item)">
-                <li id="shopping-list-item-price" class="col-2">@${{ item.price }}</li>
-            </ul>
-            <div class="row align-items-end" id="checkout-button">
-                <button class="btn btn-secondary col-5" type="submit" @click="checkout()">Checkout</button>
+            <div class="row">
+                <ul class="align-items-center" v-for="item in store.state.cart" :key="item.pid">
+                    <li id="shopping-list-item-name">
+                        <span class="col m-2">{{ findItem(item).name }}</span>
+                        <span class="col m-2">Qty:
+                            <input class="col m-2 w-25" type="number" min="0" v-model.number="item.quantity" @focus="updateOldValue(item.quantity)" @change="handleQuantityChange(item)">
+                        </span>
+                        <span class="col m-2" id="shopping-list-item-price">${{ findItem(item).price }}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="row" id="checkout-button">
+                <button class="btn btn-secondary w-50" type="submit" @click="checkout()">Checkout</button>
             </div>
         </div>
     </div>
@@ -95,8 +111,7 @@
     padding: min(5%, 15px);
     margin: min(5%, 15px);
     border-radius: 5%;
-    /* display: flex; */
-    /* justify-content: space-around; */
+    overflow-y: scroll;
 }
 
 #shopping-list-title {
@@ -105,7 +120,7 @@
 }
 
 .shopping-list-item {
-    padding: 5px;
-    margin: 5px;
+    margin-right: 2em;
 }
+
 </style>

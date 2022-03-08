@@ -11,6 +11,12 @@ onBeforeMount(async () => {
   const prod = await fetch('admin/prod.php');
   const products = await prod.json();
   store.commit('loadProducts', products);
+  if (window.localStorage.getItem("cart") === null) {
+    // Set a new cart
+    window.localStorage.setItem("cart", JSON.stringify([]));
+    store.commit('loadCart', JSON.parse([]));
+  }
+  else store.commit('loadCart', JSON.parse(window.localStorage.getItem("cart")));
 });
 </script>
 

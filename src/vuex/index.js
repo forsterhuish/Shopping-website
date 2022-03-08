@@ -30,14 +30,16 @@ const store = createStore({
             state.showProductDetails = false;
         },
         addItemToCart(state, newItem) {
-            const itemIndex = state.cart.findIndex((item) => item.id === newItem.id);
+            const itemIndex = state.cart.findIndex((item) => item.pid === newItem.pid);
             if (itemIndex >= 0)
                 state.cart[itemIndex].quantity += 1;
             else
                 state.cart.push(newItem);
+            window.localStorage.setItem('cart', JSON.stringify(state.cart));
         },
         removeItemFromCart(state, itemIndex) {
             state.cart.splice(itemIndex, 1);
+            window.localStorage.setItem('cart', JSON.stringify(state.cart));
         },
         updateInventory(state, { productIndex, updateValue }) {
             if (state.products[productIndex].inventory <= 0) {
@@ -57,12 +59,16 @@ const store = createStore({
             else {
                 state.cart[chosenItemIndex].quantity = newValue;
             }
+            window.localStorage.setItem('cart', JSON.stringify(state.cart));
         },
         loadCategories(state, categories) {
             Object.assign(state.categories, categories);
         },
         loadProducts(state, products) {
             Object.assign(state.products, products);
+        },
+        loadCart(state, cart) {
+            Object.assign(state.cart, cart);
         }
     }
 });
