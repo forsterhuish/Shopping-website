@@ -12,8 +12,7 @@
         store.state.showCart = true;
     }
     const hideCart = () => {
-        // store.state.showCart = false;
-        store.state.showCart = true;
+        store.state.showCart = false;
     }
     const handleQuantityChange = (chosenItem) => {
         const cartItemIndex = store.state.cart.findIndex(item => item.pid === chosenItem.pid);
@@ -65,18 +64,14 @@
         <i id="cart-icon" class="bi bi-cart icon"></i>
         <!-- shopping list -->
         <div class="container-fluid shopping-list" v-if="store.state.showCart">
-            <title id="shopping-list-title" class="row align-items-start">{{ title }}</title>
-            <div class="row">
-                <ul class="align-items-center" v-for="item in store.state.cart" :key="item.pid">
-                    <li id="shopping-list-item-name">
-                        <span class="col m-2">{{ findItem(item).name }}</span>
-                        <span class="col m-2">Qty:
-                            <input class="col m-2 w-25" type="number" min="0" v-model.number="item.quantity" @focus="updateOldValue(item.quantity)" @change="handleQuantityChange(item)">
-                        </span>
-                        <span class="col m-2" id="shopping-list-item-price">${{ findItem(item).price }}</span>
-                    </li>
-                </ul>
-            </div>
+            <title id="shopping-list-title" class="row">{{ title }}</title>
+            <table>
+                <tr v-for="item in store.state.cart" :key="item.pid">
+                    <td class="col m-2">{{ findItem(item).name }}</td>
+                    <td>Qty: <input class="col m-2 w-50" type="number" min="0" v-model.number="item.quantity" @focus="updateOldValue(item.quantity)" @change="handleQuantityChange(item)"></td>
+                    <td class="col m-2" id="shopping-list-item-price">${{ findItem(item).price }}</td>
+                </tr>
+            </table>
             <div class="row" id="checkout-button">
                 <button class="btn btn-secondary w-50" type="submit" @click="checkout()">Checkout</button>
             </div>
@@ -117,10 +112,6 @@
 #shopping-list-title {
     font-weight: bold;
     padding-left: 10px;
-}
-
-.shopping-list-item {
-    margin-right: 2em;
 }
 
 </style>

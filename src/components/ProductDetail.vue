@@ -13,15 +13,7 @@
     });
     const emit = defineEmits(['add-to-cart', 'display-image']);
     const displayImage = (product) => {
-        prod_url = ""
-        // for (let ext of ['jpg', 'jpeg', 'png', 'gif']) {
-        //     const res = await fetch(`/admin/lib/images/${product.pid}.${ext}`, { method: "HEAD" });
-        //     if (res.ok) {
-        //         // URL is valid
-        //         prod_url = `/admin/lib/images/${product.pid}.${ext}`;
-        //         break;
-        //     }
-        // }
+        let prod_url = ""
         return prod_url !== "" ? prod_url : 
             (product.catid === store.state.categories[0].catid
                 ? '/admin/lib/images/food.jpeg'

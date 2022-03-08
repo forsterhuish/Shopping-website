@@ -2,7 +2,7 @@
 // Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-import { onBeforeRouteUpdate, useRouter } from 'vue-router';
+import { onBeforeRouteUpdate, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { parse } from "@vue/compiler-dom";
 const store = useStore();
@@ -16,6 +16,7 @@ let prod_actionID = -1,
     prod_catName = "",
     prod_prodName = "",
     prod_prodPrice = null,
+    prod_prodStock = null,
     prod_prodDescription = "";
 const cat_actions = ["cat_insert", "cat_edit", "cat_delete"];
 const prod_actions = ["prod_insert", "prod_update", "prod_delete"];
@@ -45,16 +46,22 @@ const setImage = (e) => {
 
 const displayDADImage = (e) => {
     if (!isImage(e.target.files[0])) {
-        displayWarning("#dad_image", "#dad_invalid", "Invalid Input File Format.");
+        displayWarning(
+            "#dad_image",
+            "#dad_invalid",
+            "Invalid Input File Format."
+        );
         document.querySelector("#dad_image").value = null;
         return;
     }
     const reader = new FileReader();
     reader.onload = () => {
         const DAD_image = reader.result;
-        document.querySelector("#product-thumbnail").style.backgroundImage = `url(${DAD_image})`
+        document.querySelector(
+            "#product-thumbnail"
+        ).style.backgroundImage = `url(${DAD_image})`;
         document.querySelector("#dad_image").value = null;
-    }
+    };
     reader.readAsDataURL(e.target.files[0]);
 };
 
@@ -82,8 +89,8 @@ const removeWarning = (selector) => {
     document.querySelector(selector).classList.remove("is-invalid");
 };
 
-const testID = (input) => new RegExp('/^\d*$/').test(input);
-const testStr = (input) => new RegExp('/^[\w\- ]+$/').test(input);
+const testID = (input) => new RegExp("/^\d*$/").test(input);
+const testStr = (input) => new RegExp("/^[\w\- ]+$/").test(input);
 
 const catFormSubmit = async () => {
     // Verified category management form
@@ -101,8 +108,7 @@ const catFormSubmit = async () => {
     if (cat_ID === undefined || testID(cat_ID)) {
         displayWarning("#cat_id");
         validated = false;
-    }
-    else {
+    } else {
         removeWarning("#cat_id");
         if (validated === true) validated = true;
     }
@@ -117,12 +123,12 @@ const catFormSubmit = async () => {
     if (!validated) return;
     else {
         let postData = new FormData();
-        postData.append('name', cat_cat_Name);
-        if (action === 'cat_edit') postData.append('catid', cat_ID);
+        postData.append("name", cat_cat_Name);
+        if (action === "cat_edit") postData.append("catid", cat_ID);
 
         const res = await fetch(`/admin/admin-process.php?action=${action}`, {
-            method: 'POST',
-            body: postData
+            method: "POST",
+            body: postData,
         });
         const res_text = await res.text();
         console.log(JSON.parse(res_text.split(";")[1]));
@@ -135,7 +141,8 @@ const prodFormSubmit = async () => {
         prod_cat_Name = "",
         prod_prod_Name = "",
         prod_prod_price = 0,
-        prod_prod_description = "";
+        prod_prod_description = "",
+        prod_prod_stock = 0;
     if (prod_actionID === undefined || prod_actionID < 0) {
         displayWarning("#prod_action");
         validated = false;
@@ -172,11 +179,22 @@ const prodFormSubmit = async () => {
         prod_prod_price = Number(prod_prodPrice);
         if (validated === true) validated = true;
     }
+    if (
+        prod_prodStock === null ||
+        isNaN(prod_prodStock) ||
+        prod_prodStock < 0
+    ) {
+        displayWarning("#prod_stock");
+        validated = false;
+    } else {
+        removeWarning("#prod_stock");
+        prod_prod_stock = Number(prod_prodStock);
+        if (validated === true) validated = true;
+    }
     if (prod_prodDescription === "") {
         displayWarning("#prod_description");
         validated = false;
-    }
-    else {
+    } else {
         removeWarning("#prod_description");
         prod_prod_description = escapeHTML(prod_prodDescription);
         if (validated === true) validated = true;
@@ -199,52 +217,57 @@ const prodFormSubmit = async () => {
     if (!validated) return;
     else {
         // uploadImage(prod_photoObj);
-        if (action === 'prod_insert' || action === 'prod_delete') {
+        if (action === "prod_insert" || action === "prod_delete") {
             let postData = new FormData();
-            postData.append('cat-name', prod_cat_Name);
-            postData.append('prod-name', prod_prod_Name);
-            postData.append('price', prod_prod_price);
-            postData.append('description', prod_prod_description);
-            postData.append('file', prod_photoObj);
+            postData.append("cat-name", prod_cat_Name);
+            postData.append("prod-name", prod_prod_Name);
+            postData.append("price", prod_prod_price);
+            postData.append("stock", prod_prod_stock);
+            postData.append("description", prod_prod_description);
+            postData.append("file", prod_photoObj);
 
-            const res = await fetch(`/admin/admin-process.php?action=${action}`, {
-                method: 'POST',
-                body: postData
-            });
+            const res = await fetch(
+                `/admin/admin-process.php?action=${action}`,
+                {
+                    method: "POST",
+                    body: postData,
+                }
+            );
             const res_text = await res.text();
             if (res_text.split(";").length <= 1) {
                 console.log(JSON.parse(res_text));
-            }
-            else console.log(JSON.parse(res_text.split(";")[1]));
-        }
-        else if (action === 'prod_delete') {
+            } else console.log(JSON.parse(res_text.split(";")[1]));
+        } else if (action === "prod_delete") {
             let postData = new FormData();
-            postData.append('prod-name', prod_prod_Name);
-            const res = await fetch(`/admin/admin-process.php?action=${action}`, {
-                method: 'POST',
-                body: postData
-            });
+            postData.append("prod-name", prod_prod_Name);
+            const res = await fetch(
+                `/admin/admin-process.php?action=${action}`,
+                {
+                    method: "POST",
+                    body: postData,
+                }
+            );
             const res_text = await res.text();
             if (res_text.split(";").length <= 1) {
                 console.log(JSON.parse(res_text));
-            }
-            else console.log(JSON.parse(res_text.split(";")[1]));
+            } else console.log(JSON.parse(res_text.split(";")[1]));
         }
     }
 };
 
 const backToHome = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     router.back();
-}
-
+};
 </script>
 
 <template>
     <div class="container">
         <h1 class="m-3 d-inline">Admin Page</h1>
         <h3 class="d-inline">(<span style="color: red">*</span>: required)</h3>
-        <button class="btn btn-secondary m-3 d-block" @click="backToHome">Back to Home</button>
+        <button class="btn btn-secondary m-3 d-block" @click="backToHome">
+            Back to Home
+        </button>
         <div class="row">
             <div class="col">
                 <fieldset>
@@ -311,7 +334,11 @@ const backToHome = (e) => {
                             </div>
                         </div>
                         <div class="m-3">
-                            <input class="btn btn-primary" type="submit" value="Submit" />
+                            <input
+                                class="btn btn-primary"
+                                type="submit"
+                                value="Submit"
+                            />
                         </div>
                     </form>
                 </fieldset>
@@ -413,7 +440,25 @@ const backToHome = (e) => {
                             </div>
                         </div>
                         <div class="m-3">
-                            <label for="prod_description" class="form-label required"
+                            <label for="prod_stock" class="form-label required"
+                                >Product Stock</label
+                            >
+                            <input
+                                v-model.number="prod_prodStock"
+                                id="prod_stock"
+                                class="form-control form-control-lg"
+                                type="text"
+                                aria-label="prod stock input"
+                                required="true"
+                            />
+                            <div class="invalid-feedback">
+                                Please enter a valid product stock.
+                            </div>
+                        </div>
+                        <div class="m-3">
+                            <label
+                                for="prod_description"
+                                class="form-label required"
                                 >Product Description</label
                             >
                             <textarea
@@ -423,7 +468,9 @@ const backToHome = (e) => {
                                 row="3"
                                 required="true"
                             />
-                            <div class="invalid-feedback">Please enter the description.</div>
+                            <div class="invalid-feedback">
+                                Please enter the description.
+                            </div>
                         </div>
                         <div class="m-3">
                             <label for="prod_photo" class="form-label required">
@@ -444,7 +491,11 @@ const backToHome = (e) => {
                             </div>
                         </div>
                         <div class="m-3">
-                            <input class="btn btn-primary" type="submit" value="Submit" />
+                            <input
+                                class="btn btn-primary"
+                                type="submit"
+                                value="Submit"
+                            />
                         </div>
                     </form>
                 </fieldset>
@@ -469,7 +520,7 @@ const backToHome = (e) => {
                 </div>
                 <div class="col">
                     <h3 class="m-3">Thumbnail</h3>
-                    <img class="m-3" id="product-thumbnail">
+                    <img class="m-3" id="product-thumbnail" />
                 </div>
             </div>
         </div>
@@ -484,7 +535,7 @@ const backToHome = (e) => {
 
 .dad_box {
     display: block;
-    width: 100%; 
+    width: 100%;
     max-width: 1080px;
     height: 100%;
     max-height: 880px;
