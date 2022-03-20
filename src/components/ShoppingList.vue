@@ -1,5 +1,5 @@
 <script setup>
-    import { computed } from 'vue';
+    import { computed, onBeforeMount } from 'vue';
     import { useStore } from 'vuex';
     // Bootstrap
     import "bootstrap/dist/css/bootstrap.min.css";
@@ -45,18 +45,12 @@
         oldValue = value;
     }
     const title = computed(() => {
-        return 'Shopping List (Total: $' + store.state.cart.reduce((prev, curr) => prev + findItem(curr).price * curr.quantity, 0).toFixed(2) + ')';
+        return 'Shopping List (Total: $' + store.state.cart.reduce((prev, curr) => prev + Number(findItem(curr).price) * curr.quantity, 0).toFixed(2) + ')';
     });
 
     const findItem = (item) => {
         return store.state.products.find(i => i.pid === item.pid);
-        // return {
-        //     name: "Test",
-        //     quantity: 1,
-        //     price: 2.3
-        // }
     }
-
 </script>
 
 <template>
@@ -69,7 +63,7 @@
                 <tr v-for="item in store.state.cart" :key="item.pid">
                     <td class="col m-2">{{ findItem(item).name }}</td>
                     <td>Qty: <input class="col m-2 w-50" type="number" min="0" v-model.number="item.quantity" @focus="updateOldValue(item.quantity)" @change="handleQuantityChange(item)"></td>
-                    <td class="col m-2" id="shopping-list-item-price">${{ findItem(item).price }}</td>
+                    <td class="col m-2" id="shopping-list-item-price">${{ Number(findItem(item).price) }}</td>
                 </tr>
             </table>
             <div class="row" id="checkout-button">

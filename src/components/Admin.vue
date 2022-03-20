@@ -2,10 +2,7 @@
 // Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-import { onBeforeRouteUpdate, useRouter } from "vue-router";
-import { useStore } from "vuex";
-import { parse } from "@vue/compiler-dom";
-const store = useStore();
+import { useRouter } from "vue-router";
 const router = useRouter();
 
 let cat_actionID = -1,
@@ -90,7 +87,7 @@ const removeWarning = (selector) => {
 };
 
 const testID = (input) => new RegExp("/^\d*$/").test(input);
-const testStr = (input) => new RegExp("/^[\w\- ]+$/").test(input);
+const testStr = (input) => new RegExp("/^[\w\-]+$/").test(input);
 
 const catFormSubmit = async () => {
     // Verified category management form

@@ -43,6 +43,23 @@
                 <button class="btn btn-primary add-to-cart-button" :class="product.stock && product.stock < 0 ? 'disabled' : ''" @click="addToCart(product)">Add To Cart</button>
             </div>
             <h1 v-show="store.state.currentCatID === 0">This is the home page</h1>
+            <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+                </li>
+            </ul>
+</nav>
         </div>
     </div>
 </template>

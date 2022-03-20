@@ -8,7 +8,7 @@ onBeforeMount(async () => {
   const cat = await fetch(`/admin/cat.php`);
   const categories = await cat.json();
   store.commit('loadCategories', categories);
-  const prod = await fetch('admin/prod.php');
+  const prod = await fetch('/admin/prod.php'); // only load pid, name and price for cart
   const products = await prod.json();
   store.commit('loadProducts', products);
   if (window.localStorage.getItem("cart") === null) {

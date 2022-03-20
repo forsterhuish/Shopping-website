@@ -5,6 +5,7 @@ const store = createStore({
         return {
             currentCatID: 0,
             categories: [],
+            // loadedCategories: [],
             currentProductID: -1,
             cart: [],
             products: [],
@@ -15,7 +16,15 @@ const store = createStore({
     },
     mutations: {
         updateCatID(state, index) {
+            if (isNaN(index)) return;
             state.currentCatID = index;
+            // if (index > 0 && !state.loadedCategories.includes(index)) {
+            //     // Only load product when haven't loaded yet
+            //     const res = await fetch(`/admin/prod_id.php?catid=${index}`);
+            //     const res_json = await res.json();
+            //     store.commit('loadProducts', res_json);
+            //     state.loadedCategories.push(index);
+            // }
         },
         updateProductID(state, index) {
             state.currentProductID = index;
@@ -62,10 +71,14 @@ const store = createStore({
             window.localStorage.setItem('cart', JSON.stringify(state.cart));
         },
         loadCategories(state, categories) {
-            Object.assign(state.categories, categories);
+            if (Array.isArray(categories) && Array.isArray(state.categories)) {
+                Object.assign(state.categories, categories);
+            }
         },
         loadProducts(state, products) {
-            Object.assign(state.products, products);
+            if (Array.isArray(products) && Array.isArray(state.products)) {
+                Object.assign(state.products, products);
+            }
         },
         loadCart(state, cart) {
             Object.assign(state.cart, cart);
