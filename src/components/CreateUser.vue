@@ -96,7 +96,7 @@ const backToLogin = (e) => {
                             <input v-model="password" 
                                 id="password" 
                                 class="form-control form-control-lg"
-                                type="text"
+                                type="password"
                                 aria-label="password input"
                                 required="true"
                             >
