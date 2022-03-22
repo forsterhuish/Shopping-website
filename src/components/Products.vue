@@ -43,25 +43,27 @@
                 <button class="btn btn-primary add-to-cart-button" :class="product.stock && product.stock < 0 ? 'disabled' : ''" @click="addToCart(product)">Add To Cart</button>
             </div>
             <h1 v-show="store.state.currentCatID === 0">This is the home page</h1>
-            <nav aria-label="Page navigation example">
-            <ul class="pagination">
+        </div>
+    </div>
+    <footer class="row" v-show="store.state.currentCatID > 0">
+        <nav aria-label="Page navigation">
+            <ul class="pagination d-flex justify-content-center">
                 <li class="page-item">
                     <a class="page-link" href="#" aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item" v-for="i in Math.floor(store.state.products.filter(product => product.catid === store.state.currentCatID).length / store.state.maxProduct) + 1">
+                    <a class="page-link" href="#">{{i}}</a>
+                </li>
                 <li class="page-item">
                 <a class="page-link" href="#" aria-label="Next">
                     <span aria-hidden="true">&gt;</span>
                 </a>
                 </li>
             </ul>
-</nav>
-        </div>
-    </div>
+        </nav>
+    </footer>
 </template>
 
 <style scoped>
@@ -90,6 +92,11 @@
     color: #f89c5f;
     margin: 0;
 }
+
+footer {
+    margin-top: 8rem;
+}
+
 </style>
 <style>
 .add-to-cart-button {

@@ -75,7 +75,7 @@ const uploadImage = async (image) => {
     }
 };
 
-const displayWarning = (inputSelector, warningTextSelector, text = "") => {
+const displayWarning = (inputSelector = "", warningTextSelector = "", text = "") => {
     document.querySelector(inputSelector).classList.add("is-invalid");
     if (text.length > 0 && warningTextSelector.length > 0) {
         document.querySelector(warningTextSelector).innerHTML = text;
@@ -86,8 +86,8 @@ const removeWarning = (selector) => {
     document.querySelector(selector).classList.remove("is-invalid");
 };
 
-const testID = (input) => new RegExp("/^\d*$/").test(input);
-const testStr = (input) => new RegExp("/^[\w\-]+$/").test(input);
+const testID = (input) => /^\d*$/.test(input);
+const testStr = (input) => /^[\w\-]+$/.test(input);
 
 const catFormSubmit = async () => {
     // Verified category management form
@@ -148,7 +148,7 @@ const prodFormSubmit = async () => {
         action = prod_actions[prod_actionID];
         validated = true;
     }
-    if (!prod_catName || (prod_catName && prod_catName.length <= 0)) {
+    if (!prod_catName || (prod_catName && prod_catName.length <= 0) || !testStr(prod_catName)) {
         displayWarning("#prod_cat");
         validated = false;
     } else {
@@ -156,7 +156,7 @@ const prodFormSubmit = async () => {
         prod_cat_Name = escapeHTML(prod_catName);
         if (validated === true) validated = true;
     }
-    if (!prod_prodName || (prod_prodName && prod_prodName.length <= 0)) {
+    if (!prod_prodName || (prod_prodName && prod_prodName.length <= 0) || !testStr(prod_prodName)) {
         displayWarning("#prod_name");
         validated = false;
     } else {
@@ -188,7 +188,7 @@ const prodFormSubmit = async () => {
         prod_prod_stock = Number(prod_prodStock);
         if (validated === true) validated = true;
     }
-    if (prod_prodDescription === "") {
+    if (!testStr(prod_prodDescription)) {
         displayWarning("#prod_description");
         validated = false;
     } else {
@@ -254,7 +254,7 @@ const prodFormSubmit = async () => {
 
 const backToHome = (e) => {
     e.preventDefault();
-    router.back();
+    router.push('/');
 };
 </script>
 

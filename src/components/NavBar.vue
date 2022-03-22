@@ -23,7 +23,8 @@
                 <!-- <a class="navbar-brand">{{ brand }}</a> -->
                 <!-- Show collapsed menu when in small screen size only -->
                 <router-link :to="{ path: '/' }" class="navbar-brand" @click="handlePageChange(0)">{{ brand }}</router-link>
-                <router-link :to="{ path: '/admin-panel' }" class="nav-link link-danger" @click="handlePageChange(0)">Admin</router-link>
+                <!-- <router-link :to="{ path: '/admin-panel' }" class="nav-link link-danger" @click="handlePageChange(0)">Admin</router-link> -->
+                <router-link :to="{ path: '/login' }" class="nav-link link-success" @click="handlePageChange(0)">Login</router-link>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
                     aria-label="Toggle navigation">

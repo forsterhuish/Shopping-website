@@ -11,7 +11,8 @@ const store = createStore({
             products: [],
             showProductDetails: false,
             showCart: false,
-            imageURL: ""
+            imageURL: "",
+            maxProduct: 10,
         }
     },
     mutations: {
@@ -82,6 +83,9 @@ const store = createStore({
         },
         loadCart(state, cart) {
             Object.assign(state.cart, cart);
+        },
+        updateMaxProd(state, value) {
+            if (value > 0) state.maxProduct = value;
         }
     }
 });
