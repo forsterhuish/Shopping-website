@@ -45,7 +45,7 @@
         oldValue = value;
     }
     const title = computed(() => {
-        return 'Shopping List (Total: $' + store.state.cart.reduce((prev, curr) => prev + Number(findItem(curr).price) * curr.quantity, 0).toFixed(2) + ')';
+        return `Shopping Cart of ${store.state.currentUser} (Total: $ ${store.state.cart.reduce((prev, curr) => prev + Number(findItem(curr).price) * curr.quantity, 0).toFixed(2)})`;
     });
 
     const findItem = (item) => {

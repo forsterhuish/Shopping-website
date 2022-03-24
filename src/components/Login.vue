@@ -2,9 +2,19 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import { useRouter } from "vue-router";
+import store from "../vuex";
 const router = useRouter();
 let email = "";
 let password = "";
+
+const escapeHTML = (unsafeStr = "") =>
+    unsafeStr
+        .toString()
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
 const testEmail = (input) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(input);
 const testPassword = (input) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(input);
@@ -29,7 +39,7 @@ const login = async () => {
     }
     else {
         removeWarning("#user-name");
-        user_email = email;
+        user_email = escapeHTML(email);
         validated = true;
     }
     if (!testPassword(password)) {
@@ -38,7 +48,7 @@ const login = async () => {
     }
     else {
         removeWarning("#password");
-        user_pw = password;
+        user_pw = escapeHTML(password);
         if (validated === true) validated = true;
     }
     if (!validated) return;
@@ -46,19 +56,24 @@ const login = async () => {
         let postData = new FormData();
         postData.append("email", user_email);
         postData.append("pw", user_pw);
-        const res = await fetch('/admin/admin-process.php?action=login', {
+        const res = await fetch('/admin/user_mgnt.php?action=login', {
             method: 'POST',
             body: postData
         });
         const res_text = await res.text();
         const res_json = JSON.parse(res_text.split(";")[1])
         console.log(res_json);
-        console.log(JSON.parse(res_json['success']))
 
-        if (res_json['success'] && JSON.parse(res_json['success'])['admin'] === 1)
-            // Go to admin page
-            router.push('/admin-panel');
-        else router.push('/');
+        if (res_json['success']) {
+            const detail_json = JSON.parse(res_json['success']);
+            if (detail_json['email'].length > 0)
+                store.commit('setCurrentUser', detail_json['email']);
+            if (detail_json['admin'] === 1) {
+                // Go to admin page
+                router.push('/admin-panel');
+            }
+            else router.push('/');
+        }
     }
 }
 

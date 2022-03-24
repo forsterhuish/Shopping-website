@@ -6,6 +6,15 @@ const router = useRouter();
 let email = "";
 let password = "";
 
+const escapeHTML = (unsafeStr = "") =>
+    unsafeStr
+        .toString()
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
 const testEmail = (input) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(input);
 const testPassword = (input) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(input);
 
@@ -29,7 +38,7 @@ const createUser = async () => {
     }
     else {
         removeWarning("#user-name");
-        user_email = email;
+        user_email = escapeHTML(email);
         validated = true;
     }
     if (!testPassword(password)) {
@@ -38,7 +47,7 @@ const createUser = async () => {
     }
     else {
         removeWarning("#password");
-        user_pw = password;
+        user_pw = escapeHTML(password);
         if (validated === true) validated = true;
     }
     if (!validated) return;
@@ -46,7 +55,7 @@ const createUser = async () => {
         let postData = new FormData();
         postData.append("email", user_email);
         postData.append("pw", user_pw);
-        const res = await fetch('/admin/admin-process.php?action=createUser', {
+        const res = await fetch('/admin/user_mgnt.php?action=create_user', {
             method: 'POST',
             body: postData
         });
@@ -119,8 +128,5 @@ const backToLogin = (e) => {
 </template>
 
 <style scoped>
-.required::after {
-    content: " *";
-    color: red;
-}
+
 </style>

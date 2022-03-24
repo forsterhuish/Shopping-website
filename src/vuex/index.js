@@ -13,6 +13,7 @@ const store = createStore({
             showCart: false,
             imageURL: "",
             maxProduct: 10,
+            currentUser:  "Guest",
         }
     },
     mutations: {
@@ -76,16 +77,20 @@ const store = createStore({
                 Object.assign(state.categories, categories);
             }
         },
-        loadProducts(state, products) {
+        loadProducts(state, products = null) {
             if (Array.isArray(products) && Array.isArray(state.products)) {
                 Object.assign(state.products, products);
             }
         },
-        loadCart(state, cart) {
-            Object.assign(state.cart, cart);
+        loadCart(state, cart = null) {
+            if (Array.isArray(cart) && Array.isArray(state.cart))
+                Object.assign(state.cart, cart);
         },
-        updateMaxProd(state, value) {
+        updateMaxProd(state, value = 0) {
             if (value > 0) state.maxProduct = value;
+        },
+        setCurrentUser(state, user) {
+            if (user.length > 0) state.currentUser = user;
         }
     }
 });

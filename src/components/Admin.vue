@@ -3,7 +3,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 const router = useRouter();
+const store = useStore();
 
 let cat_actionID = -1,
     cat_ID = null,
@@ -256,6 +258,22 @@ const backToHome = (e) => {
     e.preventDefault();
     router.push('/');
 };
+
+const logout = async () => {
+    if (confirm("Are you sure you want to logout? ")) {
+        // handlePageChange(0);
+        const res = await fetch('/admin/user_mgnt.php?action=logout');
+        const res_text = await res.text();
+        const res_json = JSON.parse(res_text.split(";")[1])
+        console.log(res_json);
+
+        if (res_json['success'] === true) {
+            store.commit('setCurrentUser', "Guest");
+            // Go to home page
+            router.push('/');
+        }
+    }
+}
 </script>
 
 <template>
@@ -264,6 +282,9 @@ const backToHome = (e) => {
         <h3 class="d-inline">(<span style="color: red">*</span>: required)</h3>
         <button class="btn btn-secondary m-3 d-block" @click="backToHome">
             Back to Home
+        </button>
+        <button class="btn btn-danger m-3 d-inline" @click="logout">
+            Logout
         </button>
         <div class="row">
             <div class="col">
