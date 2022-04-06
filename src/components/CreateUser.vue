@@ -55,13 +55,16 @@ const createUser = async () => {
         let postData = new FormData();
         postData.append("email", user_email);
         postData.append("pw", user_pw);
+        const n = await fetch('/admin/csrf.php?csrf_action=getNonce&action=create_user');
+        const nonce = await n.text();
+        // console.log(nonce);
         const res = await fetch('/admin/user_mgnt.php?action=create_user', {
             method: 'POST',
-            body: postData
+            body: postData,
         });
         const res_text = await res.text();
         const res_json = JSON.parse(res_text.split(";")[1])
-        console.log(res_json);
+        // console.log(res_json);
 
         if (res_json['success'] === true)
             // Go to login page

@@ -4,6 +4,8 @@ import ProductDetail from '../components/ProductDetail.vue'
 import Admin from '../components/Admin.vue'
 import Login from '../components/Login.vue'
 import CreateUser from '../components/CreateUser.vue'
+import ChangePassword from '../components/ChangePassword.vue';
+import Checkout from '../components/Checkout.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +47,16 @@ const router = createRouter({
       path: "/create-user",
       name: "create-user",
       component: CreateUser
+    },
+    {
+      path: "/change-pw",
+      name: "change-pw",
+      component: ChangePassword
+    },
+    {
+      path: "/checkout",
+      name: "checkout",
+      component: Checkout
     }
   ]
 })

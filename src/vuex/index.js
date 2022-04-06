@@ -8,12 +8,13 @@ const store = createStore({
             // loadedCategories: [],
             currentProductID: -1,
             cart: [],
+            totalAmount: 0,
             products: [],
             showProductDetails: false,
             showCart: false,
             imageURL: "",
             maxProduct: 10,
-            currentUser:  "Guest",
+            currentUser: { name: "Guest", isAdmin: false },
         }
     },
     mutations: {
@@ -47,6 +48,7 @@ const store = createStore({
             else
                 state.cart.push(newItem);
             window.localStorage.setItem('cart', JSON.stringify(state.cart));
+            store.commit('updateTotalAmount');
         },
         removeItemFromCart(state, itemIndex) {
             state.cart.splice(itemIndex, 1);
@@ -71,8 +73,9 @@ const store = createStore({
                 state.cart[chosenItemIndex].quantity = newValue;
             }
             window.localStorage.setItem('cart', JSON.stringify(state.cart));
+            store.commit('updateTotalAmount');
         },
-        loadCategories(state, categories) {
+        loadCategories(state, categories = null) {
             if (Array.isArray(categories) && Array.isArray(state.categories)) {
                 Object.assign(state.categories, categories);
             }
@@ -85,12 +88,19 @@ const store = createStore({
         loadCart(state, cart = null) {
             if (Array.isArray(cart) && Array.isArray(state.cart))
                 Object.assign(state.cart, cart);
+            store.commit('updateTotalAmount');
         },
         updateMaxProd(state, value = 0) {
             if (value > 0) state.maxProduct = value;
         },
         setCurrentUser(state, user) {
-            if (user.length > 0) state.currentUser = user;
+            if (user) {
+                state.currentUser.name = user.name;
+                state.currentUser.isAdmin = user.isAdmin;
+            }
+        },
+        updateTotalAmount(state) {
+            state.totalAmount = state.cart.reduce((prev, curr) => prev + Number(state.products.find(i => i.pid === curr.pid).price) * curr.quantity, 0);
         }
     }
 });

@@ -17,7 +17,7 @@ let prod_actionID = -1,
     prod_prodPrice = null,
     prod_prodStock = null,
     prod_prodDescription = "";
-const cat_actions = ["cat_insert", "cat_edit", "cat_delete"];
+const cat_actions = ["cat_insert", "cat_update", "cat_delete"];
 const prod_actions = ["prod_insert", "prod_update", "prod_delete"];
 let prod_photoObj = {};
 let DAD_image = {}; // Drag-and-drop photo
@@ -70,7 +70,7 @@ const uploadImage = async (image) => {
             method: "PUT",
             body: image,
         });
-        console.log(`Upload Status: ${res.statusText}`);
+        // console.log(`Upload Status: ${res.statusText}`);
     } catch (e) {
         alert("Error Uploading Photo");
         return;
@@ -88,7 +88,7 @@ const removeWarning = (selector) => {
     document.querySelector(selector).classList.remove("is-invalid");
 };
 
-const testID = (input) => /^\d*$/.test(input);
+const testID = (input) => /^\d+$/.test(input);
 const testStr = (input) => /^[\w\-]+$/.test(input);
 
 const catFormSubmit = async () => {
@@ -96,7 +96,7 @@ const catFormSubmit = async () => {
     let validated = false;
     let action = "",
         cat_cat_Name = "";
-    if (cat_actionID < 0 || testID(cat_actionID)) {
+    if (cat_actionID < 0) {
         displayWarning("#cat_action");
         validated = false;
     } else {
@@ -104,13 +104,13 @@ const catFormSubmit = async () => {
         action = cat_actions[cat_actionID];
         validated = true;
     }
-    if (cat_ID === undefined || testID(cat_ID)) {
-        displayWarning("#cat_id");
-        validated = false;
-    } else {
-        removeWarning("#cat_id");
-        if (validated === true) validated = true;
-    }
+    // if (isNaN(cat_ID)) {
+    //     displayWarning("#cat_id");
+    //     validated = false;
+    // } else {
+    //     removeWarning("#cat_id");
+    //     if (validated === true) validated = true;
+    // }
     if (!cat_catName || cat_catName.length <= 0) {
         displayWarning("#cat_name");
         validated = false;
@@ -121,16 +121,25 @@ const catFormSubmit = async () => {
     }
     if (!validated) return;
     else {
+        const n = await fetch(`/admin/csrf.php?csrf_action=getNonce&action=${action}`, { credentials: 'same-origin' });
+        const nce = await n.text();
+        const nonce = parseInt(JSON.parse(nce.split(";")[1])["success"]);
+        // console.log(nonce);
         let postData = new FormData();
+        postData.append("nonce", nonce);
         postData.append("name", cat_cat_Name);
-        if (action === "cat_edit") postData.append("catid", cat_ID);
 
         const res = await fetch(`/admin/admin-process.php?action=${action}`, {
             method: "POST",
             body: postData,
+            credentials: 'include'
         });
         const res_text = await res.text();
-        console.log(JSON.parse(res_text.split(";")[1]));
+        // if (res_text.split(";").length <= 1) {
+        //     console.log(JSON.parse(res_text));
+        // } 
+        // else 
+        //     console.log(JSON.parse(res_text.split(";")[1]));
     }
 };
 const prodFormSubmit = async () => {
@@ -215,42 +224,37 @@ const prodFormSubmit = async () => {
 
     if (!validated) return;
     else {
-        // uploadImage(prod_photoObj);
-        if (action === "prod_insert" || action === "prod_delete") {
-            let postData = new FormData();
+        const n = await fetch(`/admin/csrf.php?csrf_action=getNonce&action=${action}`, { 
+            credentials: 'same-origin',
+        });
+        const nce = await n.text();
+        const nonce = parseInt(JSON.parse(nce.split(";")[1])["success"]);
+        // console.log(nonce);
+        let postData = new FormData();
+        postData.append("nonce", nonce);
+        postData.append("prod-name", prod_prod_Name);
+        if (action !== "prod_delete") {
             postData.append("cat-name", prod_cat_Name);
-            postData.append("prod-name", prod_prod_Name);
             postData.append("price", prod_prod_price);
             postData.append("stock", prod_prod_stock);
             postData.append("description", prod_prod_description);
             postData.append("file", prod_photoObj);
-
-            const res = await fetch(
-                `/admin/admin-process.php?action=${action}`,
-                {
-                    method: "POST",
-                    body: postData,
-                }
-            );
-            const res_text = await res.text();
-            if (res_text.split(";").length <= 1) {
-                console.log(JSON.parse(res_text));
-            } else console.log(JSON.parse(res_text.split(";")[1]));
-        } else if (action === "prod_delete") {
-            let postData = new FormData();
-            postData.append("prod-name", prod_prod_Name);
-            const res = await fetch(
-                `/admin/admin-process.php?action=${action}`,
-                {
-                    method: "POST",
-                    body: postData,
-                }
-            );
-            const res_text = await res.text();
-            if (res_text.split(";").length <= 1) {
-                console.log(JSON.parse(res_text));
-            } else console.log(JSON.parse(res_text.split(";")[1]));
         }
+
+        const res = await fetch(
+            `/admin/admin-process.php?action=${action}`,
+            {
+                method: "POST",
+                body: postData,
+                credentials: 'include'
+            }
+        );
+        const res_text = await res.text();
+        // if (res_text.split(";").length <= 1) {
+        //     console.log(JSON.parse(res_text));
+        // } 
+        // else 
+        //     console.log(JSON.parse(res_text.split(";")[1]));
     }
 };
 
@@ -262,13 +266,18 @@ const backToHome = (e) => {
 const logout = async () => {
     if (confirm("Are you sure you want to logout? ")) {
         // handlePageChange(0);
-        const res = await fetch('/admin/user_mgnt.php?action=logout');
+        const res = await fetch('/admin/user_mgnt.php?action=logout', { 
+            headers: {
+                Accept: 'application/json',
+            },
+            credentials: 'include'
+        });
         const res_text = await res.text();
         const res_json = JSON.parse(res_text.split(";")[1])
-        console.log(res_json);
+        // console.log(res_json);
 
         if (res_json['success'] === true) {
-            store.commit('setCurrentUser', "Guest");
+            store.commit('setCurrentUser', { name: "Guest", isAdmin: false });
             // Go to home page
             router.push('/');
         }
@@ -303,7 +312,7 @@ const logout = async () => {
                                 required="true"
                             >
                                 <option disabled value>
-                                    Please select one
+                                    Please select an action
                                 </option>
                                 <option selected value="0">
                                     INSERT New Category
@@ -319,7 +328,7 @@ const logout = async () => {
                                 Please choose an action.
                             </div>
                         </div>
-                        <div class="m-3">
+                        <!-- <div class="m-3">
                             <label for="cat_id" class="form-label required"
                                 >Category ID</label
                             >
@@ -334,7 +343,7 @@ const logout = async () => {
                             <div class="invalid-feedback">
                                 Please enter a valid category ID.
                             </div>
-                        </div>
+                        </div> -->
                         <div class="m-3">
                             <label for="cat_name" class="form-label required"
                                 >Category Name</label
@@ -409,22 +418,6 @@ const logout = async () => {
                                 Please enter a valid category name.
                             </div>
                         </div>
-                        <!-- <div class="m-3">
-                            <label for="prod_id" class="form-label required"
-                                >Product ID</label
-                            >
-                            <input
-                                v-model="prod_prodID"
-                                id="prod_id"
-                                class="form-control form-control-lg"
-                                type="text"
-                                aria-label="prod id input"
-                                required="true"
-                            />
-                            <div class="invalid-feedback">
-                                Please enter a valid product ID.
-                            </div>
-                        </div> -->
                         <div class="m-3">
                             <label for="prod_name" class="form-label required"
                                 >Product Name</label

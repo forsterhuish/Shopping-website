@@ -1,12 +1,14 @@
 <script setup>
-    import { computed, onBeforeMount } from 'vue';
+    import { computed } from 'vue';
     import { useStore } from 'vuex';
+    import { useRouter } from 'vue-router';
     // Bootstrap
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap";
     // Bootstrap Icon
     import "bootstrap-icons/font/bootstrap-icons.css";
     const store = useStore();
+    const router = useRouter();
     let oldValue = 0;
     const showCart = () => {
         store.state.showCart = true;
@@ -39,13 +41,14 @@
         }
     }
     const checkout = () => {
-        console.log("checkout");
+        // console.log("checkout");
+        router.push("/checkout");
     }
     const updateOldValue = (value) => {
         oldValue = value;
     }
     const title = computed(() => {
-        return `Shopping Cart of ${store.state.currentUser} (Total: $ ${store.state.cart.reduce((prev, curr) => prev + Number(findItem(curr).price) * curr.quantity, 0).toFixed(2)})`;
+        return `Shopping Cart of ${store.state.currentUser.name} (Total: $ ${store.state.totalAmount})`;
     });
 
     const findItem = (item) => {

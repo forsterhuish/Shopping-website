@@ -16,13 +16,13 @@
     const logout = async () => {
         if (confirm("Are you sure you want to logout? ")) {
             handlePageChange(0);
-            const res = await fetch('/admin/user_mgnt.php?action=logout');
+            const res = await fetch('/admin/user_mgnt.php?action=logout', { credentials: 'same-origin' });
             const res_text = await res.text();
             const res_json = JSON.parse(res_text.split(";")[1])
-            console.log(res_json);
+            // console.log(res_json);
     
             if (res_json['success'] === true) {
-                store.commit('setCurrentUser', "Guest");
+                store.commit('setCurrentUser', { name: "Guest", isAdmin: false });
                 // Go to home page
                 router.push('/');
             }
@@ -31,7 +31,6 @@
 
 </script>
 
-
 <template>
     <header>
         <nav class="navbar navbar-expand-lg navbar-expand-md navbar-light bg-light">
@@ -39,9 +38,10 @@
                 <!-- <a class="navbar-brand">{{ brand }}</a> -->
                 <!-- Show collapsed menu when in small screen size only -->
                 <router-link :to="{ path: '/' }" class="navbar-brand" @click="handlePageChange(0)">{{ brand }}</router-link>
-                <!-- <router-link :to="{ path: '/admin-panel' }" class="nav-link link-danger" @click="handlePageChange(0)">Admin</router-link> -->
-                <router-link :to="{ path: '/login' }" class="nav-link link-success" @click="handlePageChange(0)" v-if="store.state.currentUser === 'Guest'">Login</router-link>
-                <router-link :to="{ path: '/logout' }" class="nav-link link-dnager" @click="logout()" v-else>Logout</router-link>
+                <router-link :to="{ path: '/admin-panel' }" class="nav-link link-danger" @click="handlePageChange(0)" v-show="store.state.currentUser.isAdmin === true">Admin</router-link>
+                <router-link :to="{ path: '/login' }" class="nav-link link-success" @click="handlePageChange(0)" v-if="store.state.currentUser.name === 'Guest'">Login</router-link>
+                <router-link :to="{ path: '/logout' }" class="nav-link" @click="logout()" v-else>Logout</router-link>
+                <router-link :to="{ path: '/change-pw' }" class="nav-link" @click="handlePageChange(0)" v-show="store.state.currentUser.name !== 'Guest'">Change Password</router-link>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
                     aria-label="Toggle navigation">

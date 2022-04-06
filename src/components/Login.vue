@@ -6,6 +6,9 @@ import store from "../vuex";
 const router = useRouter();
 let email = "";
 let password = "";
+let username = "";
+let oldPw = "";
+let newPw = "";
 
 const escapeHTML = (unsafeStr = "") =>
     unsafeStr
@@ -27,57 +30,52 @@ const displayWarning = (inputSelector = "", warningTextSelector = "", text = "")
 };
 
 const removeWarning = (selector) => {
-    document.querySelector(selector).classList.remove("is-invalid");
+    if (document.querySelector(selector).classList.contains("is-invalid"))
+        document.querySelector(selector).classList.remove("is-invalid");
 };
 
 const login = async () => {
-    let user_email = "", user_pw = "";
-    let validated = false;
-    if (!testEmail(email)) {
-        displayWarning("#user-name");
-        validated = false;
-    }
-    else {
-        removeWarning("#user-name");
-        user_email = escapeHTML(email);
-        validated = true;
-    }
-    if (!testPassword(password)) {
-        displayWarning("#password");
-        validated = false;
-    }
-    else {
-        removeWarning("#password");
-        user_pw = escapeHTML(password);
-        if (validated === true) validated = true;
-    }
-    if (!validated) return;
-    else {
-        let postData = new FormData();
-        postData.append("email", user_email);
-        postData.append("pw", user_pw);
-        const res = await fetch('/admin/user_mgnt.php?action=login', {
-            method: 'POST',
-            body: postData
-        });
-        const res_text = await res.text();
-        const res_json = JSON.parse(res_text.split(";")[1])
-        console.log(res_json);
+    let user_email = escapeHTML(email), user_pw = escapeHTML(password);
+    const n = await fetch('/admin/csrf.php?csrf_action=getNonce&action=login');
+    const nonce = await n.text();
+    // console.log(nonce);
+    let postData = new FormData();
+    postData.append("email", user_email);
+    postData.append("pw", user_pw);
+    removeWarning("#user-name");
+    removeWarning("#password");
 
-        if (res_json['success']) {
-            const detail_json = JSON.parse(res_json['success']);
-            if (detail_json['email'].length > 0)
-                store.commit('setCurrentUser', detail_json['email']);
-            if (detail_json['admin'] === 1) {
-                // Go to admin page
-                router.push('/admin-panel');
-            }
-            else router.push('/');
+    // Clear form
+    // document.getElementById("login-form").reset();
+    const res = await fetch('/admin/user_mgnt.php?action=login', {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+        },
+        body: postData,
+        credentials: 'include'
+    });
+    const res_text = await res.text();
+    const res_json = JSON.parse(res_text.split(";")[1])
+    // console.log(res_json);
+
+    if (res_json['success']) {
+        const detail_json = JSON.parse(res_json['success']);
+        if (detail_json['email'].length > 0)
+            store.commit('setCurrentUser', { name: detail_json['email'], isAdmin: detail_json['admin'] === 1 ? true : false });
+        if (detail_json['admin'] === 1) {
+            // Go to admin page
+            router.push('/admin-panel');
         }
+        else router.push('/');
+    }
+    else if (res_json['failed']) {
+        displayWarning("#user-name");
+        displayWarning("#password");
     }
 }
 
-const createUser = (e) => {
+const createUserPage = (e) => {
     e.preventDefault();
     router.push('/create-user');
 }
@@ -95,14 +93,14 @@ const backToHome = (e) => {
         <button class="btn btn-secondary m-3 d-inline" @click="backToHome">
             Back to Home
         </button>
-        <button class="btn btn-secondary m-3 d-inline" @click="createUser">
+        <button class="btn btn-secondary m-3 d-inline" @click="createUserPage">
             Create a new user
         </button>
         <div class="row">
             <div class="col">
                 <fieldset>
                     <legend class="m-3">Login</legend>
-                    <form @submit.prevent="login">
+                    <form @submit.prevent="login" id="login-form">
                         <div class="m-3">
                             <label class="form-label required" for="user-name">Name</label>
                             <input v-model="email" 
@@ -113,7 +111,7 @@ const backToHome = (e) => {
                                 required="true"
                             >
                             <div class="invalid-feedback">
-                                Please enter a valid user name.
+                                Wrong username and/or password. 
                             </div>
                         </div>
                         <div class="m-3">
@@ -126,7 +124,7 @@ const backToHome = (e) => {
                                 required="true"
                             >
                             <div class="invalid-feedback">
-                                Please enter a valid password.
+                                Wrong username and/or password. 
                             </div>
                         </div>
                         <div class="m-3">
