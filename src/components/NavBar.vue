@@ -22,7 +22,7 @@
             // console.log(res_json);
     
             if (res_json['success'] === true) {
-                store.commit('setCurrentUser', { name: "Guest", isAdmin: false });
+                store.commit('setCurrentUser', { name: "Guest", isAdmin: false, logon: false });
                 // Go to home page
                 router.push('/');
             }
@@ -39,9 +39,9 @@
                 <!-- Show collapsed menu when in small screen size only -->
                 <router-link :to="{ path: '/' }" class="navbar-brand" @click="handlePageChange(0)">{{ brand }}</router-link>
                 <router-link :to="{ path: '/admin-panel' }" class="nav-link link-danger" @click="handlePageChange(0)" v-show="store.state.currentUser.isAdmin === true">Admin</router-link>
-                <router-link :to="{ path: '/login' }" class="nav-link link-success" @click="handlePageChange(0)" v-if="store.state.currentUser.name === 'Guest'">Login</router-link>
+                <router-link :to="{ path: '/login' }" class="nav-link link-success" @click="handlePageChange(0)" v-if="store.state.currentUser.logon === false">Login</router-link>
                 <router-link :to="{ path: '/logout' }" class="nav-link" @click="logout()" v-else>Logout</router-link>
-                <router-link :to="{ path: '/change-pw' }" class="nav-link" @click="handlePageChange(0)" v-show="store.state.currentUser.name !== 'Guest'">Change Password</router-link>
+                <router-link :to="{ path: '/change-pw' }" class="nav-link" @click="handlePageChange(0)" v-show="store.state.currentUser.logon === true">Change Password</router-link>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
                     aria-label="Toggle navigation">
@@ -55,7 +55,7 @@
                     </ul>
                 </div>
                 <!-- Cart -->
-                <ShoppingList />
+                <ShoppingList/>
             </div>
         </nav>
     </header>

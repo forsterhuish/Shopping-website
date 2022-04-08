@@ -62,7 +62,7 @@ const login = async () => {
     if (res_json['success']) {
         const detail_json = JSON.parse(res_json['success']);
         if (detail_json['email'].length > 0)
-            store.commit('setCurrentUser', { name: detail_json['email'], isAdmin: detail_json['admin'] === 1 ? true : false });
+            store.commit('setCurrentUser', { name: detail_json['email'], isAdmin: detail_json['admin'] === 1 ? true : false, logon: true });
         if (detail_json['admin'] === 1) {
             // Go to admin page
             router.push('/admin-panel');

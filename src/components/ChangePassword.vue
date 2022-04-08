@@ -79,7 +79,7 @@ const changePassword = async () => {
             // console.log(res_json);
 
             if (res_json['success'] === true) {
-                store.commit('setCurrentUser', { name: "Guest", isAdmin: false });
+                store.commit('setCurrentUser', { name: "Guest", isAdmin: false, logon: false });
                 // Go to home page
                 router.push('/');
             }

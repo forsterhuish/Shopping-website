@@ -14,7 +14,7 @@ const store = createStore({
             showCart: false,
             imageURL: "",
             maxProduct: 10,
-            currentUser: { name: "Guest", isAdmin: false },
+            currentUser: { name: "Guest", isAdmin: false, logon: false },
         }
     },
     mutations: {
@@ -97,6 +97,7 @@ const store = createStore({
             if (user) {
                 state.currentUser.name = user.name;
                 state.currentUser.isAdmin = user.isAdmin;
+                state.currentUser.logon = user.logon;
             }
         },
         updateTotalAmount(state) {
