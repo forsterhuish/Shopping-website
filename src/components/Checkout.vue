@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, onBeforeMount, onMounted } from 'vue';
+    import { onMounted, onBeforeUnmount } from 'vue';
     import { loadScript } from "@paypal/paypal-js";
     import { useRouter } from "vue-router";
     import { useStore } from "vuex";
@@ -14,22 +14,13 @@
     const mountPaypalButton = async () => {
         let paypal;
         try {
-            paypal = await loadScript({ "client-id": "Ad1Vw5iqQmRgQ4iLPgwN8JYZE3OTgjly7x3rQtdZhiyd9DpMW2t6x-M3KMohXrBK6iS-HZZxq8JTzsyo", currency: "HKD" })
+            paypal = await loadScript({ "client-id": "AWAhG5MUglDOpPc5QUEBDl-q4F_o0w2c7X8v3GOKNjYfM6gZwFHahyErHm4jIY0eMwTbK-iQfylgIOAb", currency: "HKD"/*, "disable-funding": "card,credit", "data-page-type": "cart", commit: true*/ })
         } catch (error) {
             console.error("failed to load the PayPal JS SDK script", error);
         }
 
         if (paypal) {
             try {
-                // let orderDetails = {
-                //     // Server return something like this
-                //     purchase_units: [{
-                //         amount: {
-                //             currency_code: "HKD",
-                //             value: store.state.totalAmount,
-                //         },
-                //     }],
-                // };
                 await paypal.Buttons({
                     createOrder: async (data, actions) => {
                         let postData = new FormData();
@@ -49,15 +40,17 @@
                         if (res['success'] === undefined) return;
                         const res_json = JSON.parse(res['success']);
                         // console.log(res_json)
-                        return actions.order.create({
-                            purchase_units: res_json
-                        });
+                        return actions.order.create(res_json);
                     },
                     onApprove: async (data, actions) => {
                         const orderData = await actions.order.capture();
-                        console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-                        const transaction = orderData.purchase_units[0].payments.captures[0];
-                        alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                        // console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                        // const transaction = orderData.purchase_units[0].payments.captures[0];
+                        // alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                        const order_id = orderData.purchase_units[0].custom_id;
+                        // console.log(`Thank you for shopping!\nYour Order ID is ${order_id}. `);
+                        // router.push({ name: "thankyou", params: { orderID: order_id }});
+                        router.replace("/");
                     }
                 }).render("#paypal-button-container");
             } catch (error) {
@@ -72,7 +65,15 @@
 
     onMounted(() => {
         mountPaypalButton();
-    })
+    });
+
+    onBeforeUnmount(() => {
+        // Clear cart
+        store.commit('emptyCart');
+        // Clear all localStorage data, including cart
+        window.localStorage.clear();
+        // Redirect back to home page
+    });
 </script>
 
 <template>
@@ -82,6 +83,7 @@
 
         <!-- PayPal Button -->
         <div id="paypal-button-container"></div>
+        <input type="hidden" name="notify_url" value="/ipn_listener.php">
     </div>
 </template>
 

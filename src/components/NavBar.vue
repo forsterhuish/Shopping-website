@@ -35,13 +35,28 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-expand-md navbar-light bg-light">
             <div class="container-fluid">
-                <!-- <a class="navbar-brand">{{ brand }}</a> -->
                 <!-- Show collapsed menu when in small screen size only -->
                 <router-link :to="{ path: '/' }" class="navbar-brand" @click="handlePageChange(0)">{{ brand }}</router-link>
-                <router-link :to="{ path: '/admin-panel' }" class="nav-link link-danger" @click="handlePageChange(0)" v-show="store.state.currentUser.isAdmin === true">Admin</router-link>
                 <router-link :to="{ path: '/login' }" class="nav-link link-success" @click="handlePageChange(0)" v-if="store.state.currentUser.logon === false">Login</router-link>
                 <router-link :to="{ path: '/logout' }" class="nav-link" @click="logout()" v-else>Logout</router-link>
-                <router-link :to="{ path: '/change-pw' }" class="nav-link" @click="handlePageChange(0)" v-show="store.state.currentUser.logon === true">Change Password</router-link>
+                <ul class="navbar-nav" v-show="store.state.currentUser.logon === true">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            User Actions
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li>
+                                <router-link :to="{ path: '/admin-panel' }" class="dropdown-item link-danger" @click="handlePageChange(0)" v-show="store.state.currentUser.isAdmin === true">Admin</router-link>
+                            </li>
+                            <li>
+                                <router-link :to="{ path: '/change-pw' }" class="dropdown-item" @click="handlePageChange(0)" v-show="store.state.currentUser.logon === true">Change Password</router-link>
+                            </li>
+                            <li>
+                                <router-link :to="{ path: '/orderhist' }" class="dropdown-item" @click="handlePageChange(0)" v-show="store.state.currentUser.logon === true">Order History</router-link>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
                     aria-label="Toggle navigation">

@@ -1,5 +1,5 @@
 <script setup>
-    import { computed } from 'vue';
+    import { computed, onBeforeMount } from 'vue';
     import { useStore } from 'vuex';
     import { useRouter } from 'vue-router';
     // Bootstrap
@@ -57,10 +57,10 @@
 </script>
 
 <template>
-    <div @mouseover="showCart" @mouseleave="hideCart">
+    <div @mouseover="showCart" @mouseleave="hideCart" class="overflow-hidden">
         <i id="cart-icon" class="bi bi-cart icon"></i>
         <!-- shopping list -->
-        <div class="container-fluid shopping-list" v-if="store.state.showCart">
+        <div class="container-fluid shopping-list overflow-auto" v-if="store.state.showCart">
             <title id="shopping-list-title" class="row">{{ title }}</title>
             <table>
                 <tr v-for="item in store.state.cart" :key="item.pid">
@@ -69,8 +69,8 @@
                     <td class="col m-2" id="shopping-list-item-price">${{ Number(findItem(item).price) }}</td>
                 </tr>
             </table>
-            <div class="row" id="checkout-button">
-                <button class="btn btn-secondary w-50" type="submit" @click="checkout()">Checkout</button>
+            <div class="row p-2" id="checkout-button">
+                <button class="btn btn-secondary w-50" :class="Array.isArray(store.state.cart) && store.state.cart.length <= 0 ? ' disabled' : ''" type="submit" @click="checkout()">Checkout</button>
             </div>
         </div>
     </div>
@@ -103,7 +103,6 @@
     padding: min(5%, 15px);
     margin: min(5%, 15px);
     border-radius: 5%;
-    overflow-y: scroll;
 }
 
 #shopping-list-title {

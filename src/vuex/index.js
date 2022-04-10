@@ -53,6 +53,7 @@ const store = createStore({
         removeItemFromCart(state, itemIndex) {
             state.cart.splice(itemIndex, 1);
             window.localStorage.setItem('cart', JSON.stringify(state.cart));
+            store.commit('updateTotalAmount');
         },
         updateInventory(state, { productIndex, updateValue }) {
             if (state.products[productIndex].inventory <= 0) {
@@ -85,15 +86,19 @@ const store = createStore({
                 Object.assign(state.products, products);
             }
         },
-        loadCart(state, cart = null) {
-            if (Array.isArray(cart) && Array.isArray(state.cart))
+        loadCart(state, cart) {
+            if (Array.isArray(cart))
                 Object.assign(state.cart, cart);
+            store.commit('updateTotalAmount');
+        },
+        emptyCart(state) {
+            state.cart = [];
             store.commit('updateTotalAmount');
         },
         updateMaxProd(state, value = 0) {
             if (value > 0) state.maxProduct = value;
         },
-        setCurrentUser(state, user) {
+        setCurrentUser(state, user = null) {
             if (user) {
                 state.currentUser.name = user.name;
                 state.currentUser.isAdmin = user.isAdmin;

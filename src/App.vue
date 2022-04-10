@@ -11,17 +11,17 @@ onBeforeMount(async () => {
   const prod = await fetch('/admin/prod.php'); // only load pid, name and price for cart
   const products = await prod.json();
   store.commit('loadProducts', products);
-  if (window.localStorage.getItem("cart") === null) {
+  if (!window.localStorage.getItem("cart")) {
     // Set a new cart
     window.localStorage.setItem("cart", JSON.stringify([]));
-    store.commit('loadCart', JSON.parse([]));
+    store.commit('emptyCart');
   }
   else store.commit('loadCart', JSON.parse(window.localStorage.getItem("cart")));
 });
 </script>
 
 <template>
-  <RouterView />
+  <RouterView/>
 </template>
 
 <style>

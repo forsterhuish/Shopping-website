@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { onBeforeMount } from "vue";
 const router = useRouter();
 const store = useStore();
 
@@ -273,7 +274,7 @@ const logout = async () => {
             credentials: 'include'
         });
         const res_text = await res.text();
-        const res_json = JSON.parse(res_text.split(";")[1])
+        const res_json = JSON.parse(res_text.split(";")[1]);
         // console.log(res_json);
 
         if (res_json['success'] === true) {
@@ -283,6 +284,47 @@ const logout = async () => {
         }
     }
 }
+
+const getAllOrders = async () => {
+    const res = await fetch('admin/order_mgnt.php?action=get_orders');
+    const res_text = await res.text();
+    const res_json = JSON.parse(res_text.split(";")[1]);
+    // console.log(res_json);
+    if (res_json['success'] !== undefined) {
+        let orders = JSON.parse(res_json['success']);
+        // console.log(orders);
+        let str = "";
+        for (const entry of orders) {
+            for (const property in entry) {
+                if (property === "items") {
+                    let items = JSON.parse(entry[property]);
+                    str += `${property}: \n`;
+                    for (const item of items) {
+                        for (const en in item) {
+                            str += `${en}: `;
+                            if (en === "unit_amount") {
+                                // console.log(item[en]);
+                                for (const unit in item[en]) {
+                                    str += `${unit}: ${item[en][unit]}\n`;
+                                }
+                            }
+                            else 
+                                str += `${item[en]}\n`;
+                        }
+                    }
+                }
+                else str += `${property}: ${entry[property]}\n`;
+            }
+            str += "\n\n";
+        }
+        document.querySelector("#orders_info").innerText = str;
+    }
+}
+
+onBeforeMount(() => {
+    getAllOrders();
+});
+
 </script>
 
 <template>
@@ -314,13 +356,13 @@ const logout = async () => {
                                 <option disabled value>
                                     Please select an action
                                 </option>
-                                <option selected value="0">
+                                <option selected>
                                     INSERT New Category
                                 </option>
-                                <option value="1">
+                                <option>
                                     UPDATE Existing Category
                                 </option>
-                                <option value="2">
+                                <option>
                                     DELETE Existing Category
                                 </option>
                             </select>
@@ -385,16 +427,16 @@ const logout = async () => {
                                 class="form-select"
                                 required="true"
                             >
-                                <option disabled value>
-                                    Please select one
+                                <option disabled>
+                                    Please select an action
                                 </option>
-                                <option selected value="0">
+                                <option selected>
                                     INSERT New Product
                                 </option>
-                                <option value="1">
+                                <option>
                                     UPDATE Existing Product
                                 </option>
-                                <option value="2">
+                                <option>
                                     DELETE Existing Product
                                 </option>
                             </select>
@@ -406,16 +448,29 @@ const logout = async () => {
                             <label for="prod_cat" class="form-label required"
                                 >Category Name</label
                             >
-                            <input
+                            <!-- <input
                                 v-model="prod_catName"
                                 id="prod_cat"
                                 class="form-control form-control-lg"
                                 type="text"
                                 aria-label="cat name input"
                                 required="true"
-                            />
+                            /> -->
+                            <select
+                                v-model="prod_catName"
+                                id="prod_cat"
+                                class="form-select"
+                                required="true"
+                            >
+                                <option disabled>
+                                    Please select one category
+                                </option>
+                                <option v-for="cat in store.state.categories">
+                                    {{ cat.name }}
+                                </option>
+                            </select>
                             <div class="invalid-feedback">
-                                Please enter a valid category name.
+                                Please select a valid category name.
                             </div>
                         </div>
                         <div class="m-3">
@@ -532,6 +587,15 @@ const logout = async () => {
                 <div class="col">
                     <h3 class="m-3">Thumbnail</h3>
                     <img class="m-3" id="product-thumbnail" />
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="m-3">All Orders</h3>
+                    <div class="m-3" id="orders_info"></div>
+                    <!-- <button class="btn btn-primary m-3" @click="getAllOrders">Show All Orders</button> -->
                 </div>
             </div>
         </div>

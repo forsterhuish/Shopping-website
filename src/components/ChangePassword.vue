@@ -69,13 +69,13 @@ const changePassword = async () => {
             body: postData
         });
         const res_text = await res.text();
-        const res_json = JSON.parse(res_text.split(";")[1])
+        const res_json = JSON.parse(res_text.split(";")[1]);
         // console.log(res_json);
         if (res_json['success']) {
             // logout user
             const res = await fetch('/admin/user_mgnt.php?action=logout');
             const res_text = await res.text();
-            const res_json = JSON.parse(res_text.split(";")[1])
+            const res_json = JSON.parse(res_text.split(";")[1]);
             // console.log(res_json);
 
             if (res_json['success'] === true) {

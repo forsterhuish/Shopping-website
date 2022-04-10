@@ -6,6 +6,8 @@ import Login from '../components/Login.vue'
 import CreateUser from '../components/CreateUser.vue'
 import ChangePassword from '../components/ChangePassword.vue';
 import Checkout from '../components/Checkout.vue';
+import Thankyou from '../components/Thankyou.vue';
+import OrderHist from '../components/OrderHistory.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +59,17 @@ const router = createRouter({
       path: "/checkout",
       name: "checkout",
       component: Checkout
+    },
+    {
+      path: "/thankyou",
+      name: "thankyou",
+      component: Thankyou,
+      props: true
+    },
+    {
+      path: "/orderhist",
+      name: "orderhist",
+      component: OrderHist
     }
   ]
 })

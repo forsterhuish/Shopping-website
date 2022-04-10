@@ -65,9 +65,9 @@ const login = async () => {
             store.commit('setCurrentUser', { name: detail_json['email'], isAdmin: detail_json['admin'] === 1 ? true : false, logon: true });
         if (detail_json['admin'] === 1) {
             // Go to admin page
-            router.push('/admin-panel');
+            router.replace('/admin-panel');
         }
-        else router.push('/');
+        else router.replace('/');
     }
     else if (res_json['failed']) {
         displayWarning("#user-name");
